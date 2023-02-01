@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from models import Aluno
 from fastapi import Response
 from typing import Optional
-from fastapi import Path, Query
+from fastapi import Path, Query, Header
 
 
 app = FastAPI()
@@ -70,8 +70,11 @@ async def delete_aluno(aluno_id: int):
 
 
 @app.get('/calculadora')
-async def calcular(a: int = Query(default=None, gt=5), b: int = Query(default=None, gt=5), c:  Optional[int] = None): 
-    soma = a + b + c
+async def calcular(a: int = Query(default=None, gt=5), b: int = Query(default=None, gt=5),  c:  Optional[int] = None, xdevs: str =Header(default=None)): 
+    soma = a + b 
+    if c:
+        soma = soma + c
+    print(f'devs: {xdevs}')
     return soma
 
 
