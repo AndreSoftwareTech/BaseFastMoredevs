@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi import HTTPException, status
 from models import Aluno
 from fastapi import Response
-from fastapi import Path
+from typing import Optional
+from fastapi import Path, Query
 
 
 app = FastAPI()
@@ -45,9 +46,7 @@ async def post_aluno(aluno: Aluno):
     del aluno.id
     return aluno
 
-@app.get('/calculadora')
-async def calcular(a, b, c): 
-    soma = a + b + c
+
 
 @app.put('/alunos/{aluno_id}')
 async def put_aluno(aluno_id: int, aluno: Aluno):
@@ -70,6 +69,10 @@ async def delete_aluno(aluno_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Aluno nao encontrado com este id {aluno_id}')
 
 
+@app.get('/calculadora')
+async def calcular(a: int = Query(default=None, gt=5), b: int = Query(default=None, gt=5), c:  Optional[int] = None): 
+    soma = a + b + c
+    return soma
 
 
 if __name__ == '__main__':
