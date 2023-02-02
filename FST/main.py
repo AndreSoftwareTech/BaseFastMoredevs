@@ -1,35 +1,40 @@
 from fastapi import FastAPI 
 from fastapi import HTTPException, status
-from models import Aluno
+from models import Aluno, alunos
 from fastapi import Response
-from typing import Optional
-from fastapi import Path, Query, Header
+from typing import Optional, Dict, List, Any
+from fastapi import Path, Query, Header, Depends
+from time import sleep
 
 
-app = FastAPI()
+app = FastAPI(
+    title='MoreDevs2Blu',
+    version='007',
+    description='Desenvolvido Pela Melhor turma da historia'
+)
+def db():
+    try:
+        print('conexao com banco')
+        sleep(1)
+    finally:
+        print('conexao com banco')
+        sleep(1)
 
 @app.get('/')
 async def raiz():
     return { "mensagem": "Seja bem vindo ao more devs" }
 
-alunos = {
-    1: {
-        "nome": "Andre",
-        "idade": "25",
-        "email": "andre@andre"
-    },
-    2: {
-        "nome": "vitor",
-        "idade": "25",
-        "email": "vitor@vitor"
-    }
-}
 
-@app.get('/alunos')
+
+@app.get('/alunos', 
+description='lista de todos os alunos',
+summary='retorno substantivo',
+response_description="Lista de Alunos cadastrados"
+ )
 async def get_alunos(): 
     return alunos
 @app.get('/alunos/{aluno_id}')
-async def get_aluno(aluno_id: int = Path(default=None, title='ID Aluno', description='deve ser entre 1 ou 2', gt=0, lt=3)): 
+async def get_aluno(aluno_id: int = Path(default=None, title='ID Aluno', description='deve ser entre 1 ou 2', gt=0, lt=3), db :Any =Depends(db)): 
     try:
         aluno = alunos[aluno_id]
         return aluno
