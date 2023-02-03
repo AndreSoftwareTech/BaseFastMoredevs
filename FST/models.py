@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 class Aluno(BaseModel):
     id: Optional[int] = None
@@ -7,7 +7,13 @@ class Aluno(BaseModel):
     idade: int
     email: str
 
+    @validator('nome')
+    def validar_nome(cls, value: str):
+        abacate = value.split(' ')
+        if len(abacate) < 3:
+            raise ValueError('O Nome deve ter nome minimo 3 espacos')
+        return value
 alunos = [
-    Aluno(id=1, nome="Andre", idade=25, email="andre@zuplae"),
-    Aluno(id=2, nome="Vitor", idade=25, email="andre@zuplae")
+    Aluno(id=1, nome="Andre vitor granemann", idade=25, email="andre@zuplae"),
+    Aluno(id=2, nome="Vitor belli pereira", idade=25, email="andre@zuplae")
 ]
