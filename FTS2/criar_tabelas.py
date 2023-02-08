@@ -1,12 +1,17 @@
 from core.configs import settings
 from core.database import engine
-from models.aluno_models import AlunoModel
+
+#1-opçao
+#from models.aluno_models import AlunoModel
 
 
 print('execuntando documento criar_tabelas')
 async def create_tables() -> None:
     print("entrando na funcao")
 
+    #2-opçao
+    import models.all_models
+    
     async with engine.begin() as conn:
         await conn.run_sync(settings.DBBaseModel.metadata.drop_all)
         await conn.run_sync(settings.DBBaseModel.metadata.create_all)
