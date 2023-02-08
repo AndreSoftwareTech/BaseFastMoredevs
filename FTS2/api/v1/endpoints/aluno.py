@@ -1,5 +1,6 @@
 from typing import List
-
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter
 from fastapi import status
 from fastapi import Depends
@@ -17,17 +18,18 @@ from core.deps import get_session
 router = APIRouter()
 
 #Listando Alunos
-router.get('/', response_model=List[AlunoSchema])
+@router.get('/', response_model=List[AlunoSchema])
 async def get_alunos(db: AsyncSession = Depends(get_session)):
+
     async with db as session:
         query = select(AlunoModel)
         result = await session.execute(query)
         alunos : List[AlunoModel] = result.scalars().all()
 
-        return alunos
+        return JSONResponse(content=jsonable_encoder(alunos))
 
 #Listando Aluno
-router.get('/{aluno_id}', response_model=AlunoSchema, status_code=status.HTTP_200_OK)
+@router.get('/{aluno_id}', response_model=AlunoSchema, status_code=status.HTTP_200_OK)
 async def get_aluno( aluno_id:int, db : AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
@@ -50,7 +52,7 @@ async def post_aluno(aluno : AlunoSchema, db: AsyncSession = Depends(get_session
     await db.commit()
     return novo_aluno
 
-router.put('/{aluno_id}', response_model=AlunoSchema, status_code= status.HTTP_202_ACCEPTED)
+@router.put('/{aluno_id}', response_model=AlunoSchema, status_code= status.HTTP_202_ACCEPTED)
 async def put_aluno(aluno_id: int, aluno : AlunoSchema, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
@@ -68,7 +70,7 @@ async def put_aluno(aluno_id: int, aluno : AlunoSchema, db: AsyncSession = Depen
         else:
             raise HTTPException(detail='Aluno nao encontrado', status_code=status.HTTP_404_NOT_FOUND)
 
-router.delete('/{aluno_id}', status_code= status.HTTP_202_ACCEPTED)
+@router.delete('/{aluno_id}', status_code= status.HTTP_202_ACCEPTED)
 async def delete_aluno(aluno_id: int, db: AsyncSession = Depends(get_session)):
     async with db as session:
         query = select(AlunoModel).filter(AlunoModel.id == aluno_id)
